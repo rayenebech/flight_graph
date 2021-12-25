@@ -1,0 +1,81 @@
+*** istanbul paris
+istanbul-> berlin-> helsinki-> paris-> 
+2 17 20 750
+istanbul-> berlin-> paris-> 
+1 5 15 300
+istanbul-> atina-> paris-> 
+1 6 0 320
+istanbul-> atina-> londra-> paris-> 
+2 6 10 395
+*** istanbul berlin
+istanbul-> berlin-> 
+0 4 0 200
+istanbul-> atina-> paris-> berlin-> 
+2 7 15 420
+istanbul-> atina-> paris-> helsinki-> berlin-> 
+3 19 20 870
+istanbul-> atina-> londra-> paris-> berlin-> 
+3 7 25 495
+istanbul-> atina-> londra-> paris-> helsinki-> berlin-> 
+4 19 30 945
+*** berlin atina
+berlin-> istanbul-> atina-> 
+1 6 20 320
+berlin-> helsinki-> paris-> atina-> 
+2 17 0 750
+berlin-> helsinki-> paris-> londra-> atina-> 
+3 17 10 825
+berlin-> paris-> atina-> 
+1 4 55 300
+berlin-> paris-> londra-> atina-> 
+2 5 5 375
+*** istanbul atina
+istanbul-> berlin-> helsinki-> paris-> atina-> 
+3 21 0 950
+istanbul-> berlin-> helsinki-> paris-> londra-> atina-> 
+4 21 10 1025
+istanbul-> berlin-> paris-> atina-> 
+2 8 55 500
+istanbul-> berlin-> paris-> londra-> atina-> 
+3 9 5 575
+istanbul-> atina-> 
+0 2 20 120
+*** istanbul londra
+istanbul-> berlin-> helsinki-> paris-> atina-> londra-> 
+4 24 10 1125
+istanbul-> berlin-> helsinki-> paris-> londra-> 
+3 18 0 850
+istanbul-> berlin-> paris-> atina-> londra-> 
+3 12 5 675
+istanbul-> berlin-> paris-> londra-> 
+2 5 55 400
+istanbul-> atina-> paris-> londra-> 
+2 6 40 420
+istanbul-> atina-> londra-> 
+1 5 30 295
+*** istanbul helsinki
+istanbul-> berlin-> helsinki-> 
+1 10 10 450
+istanbul-> berlin-> paris-> helsinki-> 
+2 12 25 600
+istanbul-> atina-> paris-> berlin-> helsinki-> 
+3 13 25 670
+istanbul-> atina-> paris-> helsinki-> 
+2 13 10 620
+istanbul-> atina-> londra-> paris-> berlin-> helsinki-> 
+4 13 35 745
+istanbul-> atina-> londra-> paris-> helsinki-> 
+3 13 20 695
+*** atina helsinki
+atina-> istanbul-> berlin-> helsinki-> 
+2 12 30 570
+atina-> istanbul-> berlin-> paris-> helsinki-> 
+3 14 45 720
+atina-> paris-> berlin-> helsinki-> 
+2 11 5 550
+atina-> paris-> helsinki-> 
+1 10 50 500
+atina-> londra-> paris-> berlin-> helsinki-> 
+3 11 15 625
+atina-> londra-> paris-> helsinki-> 
+2 11 0 575
