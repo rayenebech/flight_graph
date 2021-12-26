@@ -41,25 +41,46 @@ struct flight{
 
 typedef struct flight flight;
 
-
+/* Function to create a node for a flight*/
 node* createNode(char city[MAX_LENGTH], int hour, int min, int price);
+/* Function to create the headList of the graph and return the first head address*/
 node* createHead(int size ,char cities [size][MAX_LENGTH]);
+/*Function to create the adjacency list of the graph*/
 Graph* createGraph(int size ,char cities [size][MAX_LENGTH], char* fileName);
-
-void addConnection(struct Graph* graph, char* source,node* destinaitonNode);
+/* Function to print the adjacency list of the graph*/
 void printGraph(Graph* graph) ;
+/* Function to search for the head node given the city name.. returns -1 if not found*/
 node* searchNode(Graph* graph,char* source);
+/* Function to insert a  newNode to the list of sourceNode*/
 void InsertNode(node* sourceNode,node* newNode);
-
+/* Function to implement DFS algorithm given:
+g           -> the graph
+sourceHead  -> the departure node
+destination -> the target city
+i           -> the accumulative number of stops  
+k           -> the maximum number of stops 
+path 		-> the array of the cities (stops) of one route 
+visited		-> array to keep track of already isited nodes
+found		-> boolean that will be true if at least one flight was found
+fp			-> pointer to the file that contains all information of the flights
+n			-> the index to iterate the flights table
+flights		-> the table whose each element represents a route */
 int DFS(Graph* g, node* sourceHead, char destination[MAX_LENGTH], int* i, int k, node* path[MAX_CITY], int visited[MAX_CITY], int* found, FILE* fp, int* n, flight flights[*n] );
+
+/*A function to print the results*/
 void printresult(int size , flight flights[size], int order);
 
-/**/
+/*Functions that read the cities from the file given the special format, and save unique values 
+in the cities array*/
 void mappingFile(char * filename, char cities[MAX_CITY][MAX_LENGTH], int* size );
 int addIfUnique(int n, char  cities[n][MAX_LENGTH], char city[MAX_LENGTH]);
+
+/*Function to take inputs from the user, call DFS or search in the cache, and call the function 
+to show results*/
 void userInterface(Graph* g);
 char* lowercase(char* s);
-
+/*Functions used to implement merge sort according to the total price (order=0) 
+or to the total duration (rder=1) */
 void merge(flight arr[],int start, int mid, int end, int order);
 void sort(flight arr[], int start, int end, int order ); 
 int main() {
@@ -326,10 +347,8 @@ void InsertNode(node* sourceNode,node* newNode){
 		return;
 	}
 	p = sourceNode->next;
-	while(p->next !=NULL){
-		p = p-> next;
-	}
-	p->next = newNode;
+	sourceNode->next = newNode;
+	newNode ->next= p; 
 	return;
 	
 }
