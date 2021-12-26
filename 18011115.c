@@ -75,14 +75,23 @@ int main() {
   return 0;
 }
 void userInterface(Graph* g){
-	char source[MAX_LENGTH], destination[MAX_LENGTH];
+	
+	/*These variables are used to read data from files*/
+	char source[MAX_LENGTH], destination[MAX_LENGTH], sourceCache[MAX_LENGTH], destinationCache[MAX_LENGTH], start[3];
 	char line[256], line2[256];
-	char sourceCache[MAX_LENGTH], destinationCache[MAX_LENGTH], start[3];
-	int k,  found=0, i=0, j=0, end=0, m, order;
-	int visited[g->numVertices];
-	node* paths[10];	
-	node* sourceHead, *destinationHead;
-	flight flights[10];
+	int k,  found=0, i=0, j=0, end=0, m, order; 
+	/*
+	k     -> maximum number of stops
+	found -> if the flight information exist before in the cache
+	i     -> to iterate the route of one flight (iterator for cities)
+	j     -> to iterate the array of all available flights (iterator for flights)
+	end	  -> Keep track of the flights that belong to same source and destination
+	order -> Either to sort results by price or by duration
+	*/
+	int visited[g->numVertices]; /*Keep track of visited vertices of the graph for DFS*/
+	node* paths[10];	/*save all cities of same flight*/
+	node* sourceHead, *destinationHead; 
+	flight flights[10];	/*save all flights of same source and destination*/
 	FILE *fp;
 	
    	printf("\n********** Welcome to the Flight Management System **************** \n");
@@ -94,90 +103,91 @@ void userInterface(Graph* g){
    	
 	strcpy(source, lowercase(source));
    	strcpy(destination, lowercase(destination));
-	   	
-	
-	
+   	if(strcmp(source,destination)==0){
+		printf("\nError: Departure city cannot be the same as destination\n");
+		return;
+	}
+	/*Check if the cities exist in the system*/
 	sourceHead = searchNode(g,source);
-	
 	if(sourceHead == -1){
 		printf("\nUnfortunately we do not have any flights from the city %s \n", source);
 		return;
 	}
-	
 	destinationHead = searchNode(g,destination);
-	
 	if(destinationHead==-1){
 		printf("\nUnfortunately we do not have any flights to the city %s \n", destination);
 		return;
 	}
-	
+
 	printf("\nPlease Enter maximum number of stops: ");
 	scanf("%d",&k);
 	
 	printf("\nTo sort results by price enter 0, to sort them by duration enter 1: ");
 	scanf("%d",&order);
+	
 	/******************************* Search in the cache **********************************/
 	fp = fopen("cache.txt", "r");
-	if (fp == NULL){
-		printf("The file does not exist");
-		return -1;
-	}
+	if (fp != NULL){
 	
-	while(fgets(line, sizeof(line),fp) && !found){
-		sscanf(line, "%s %s %s\n", &start, &sourceCache, &destinationCache);
-		if(strcmp(start, "***")==0){ /*A new flight*/
-			if(strcmp(sourceCache,source)==0 && strcmp(destinationCache, destination)==0){
-				found=1;
+		while(fgets(line, sizeof(line),fp) && !found){
+			sscanf(line, "%s %s %s\n", &start, &sourceCache, &destinationCache);
+			if(strcmp(start, "***")==0){ /*A new flight*/
+				if(strcmp(sourceCache,source)==0 && strcmp(destinationCache, destination)==0){
+					found=1;
+				}	
 			}	
-		}	
-	}
-	
-	if(found){ /*Flight exists in the cache*/
-		printf("\nFlights retrieved from the cache: \n");
-		fgets(line2, sizeof(line2),fp);
-		sscanf(line2, "%d ", &m);
-		if(m<=k){
-			/*Pick the flight*/		
-			strcpy(flights[j].route,line); /*Read first option*/
-			sscanf(line2, "%d %d %d %d\n", &(flights[j].stops), &(flights[j].hour), &(flights[j].min), &(flights[j].cost));
-			j++;
 		}
 		
-		/*Check for other options*/
-		while(fgets(line, sizeof(line),fp) && !end){
-			sscanf(line, "%s ", &start);
-			if(strcmp(start, "***")==0){ /*This is the begining of another flight so end the search*/
-				end=1;	
+		if(found){ /*Flight exists in the cache*/
+			printf("\nFlights retrieved from the cache: \n");
+			fgets(line2, sizeof(line2),fp);
+			sscanf(line2, "%d ", &m);
+			if(m<=k){
+				/*Pick the flight*/		
+				strcpy(flights[j].route,line); /*Read first route*/
+				sscanf(line2, "%d %d %d %d\n", &(flights[j].stops), &(flights[j].hour), &(flights[j].min), &(flights[j].cost));
+				j++;
+			}
+			
+			/*Check for other routes*/
+			while(fgets(line, sizeof(line),fp) && !end){
+				sscanf(line, "%s ", &start);
+				if(strcmp(start, "***")==0){ /*This is the begining of another flight so end the search*/
+					end=1;	
+				}
+				else{
+					
+					fgets(line2, sizeof(line2),fp);
+					sscanf(line2, "%d ", &m);
+					if(m<=k){
+						/*Pick the flight*/	
+						strcpy(flights[j].route,line); /*Read first option*/
+						sscanf(line2, "%d %d %d %d\n", &(flights[j].stops), &(flights[j].hour), &(flights[j].min), &(flights[j].cost));
+						j++;
+					}
+				}	
+			}
+			fclose(fp);
+			if(j){ /*j is number of flights found*/
+				printresult(j,flights,order);
 			}
 			else{
-				
-				fgets(line2, sizeof(line2),fp);
-				sscanf(line2, "%d ", &m);
-				if(m<=k){
-					
-					/*Pick the flight*/	
-						
-					strcpy(flights[j].route,line); /*Read first option*/
-					sscanf(line2, "%d %d %d %d\n", &(flights[j].stops), &(flights[j].hour), &(flights[j].min), &(flights[j].cost));
-					j++;
+				if(k==0){
+					printf("\nUnfortunately, there are no direct flights. Try searching for indirect flights\n");
 				}
-			}	
+				else{
+					printf("\nNo flights with %d stops found. Please try bigger values of stops\n",k);
+				}
+			}
+			return;
 		}
-		fclose(fp);
-		if(j){ /*j is number of flights found*/
-			printresult(j,flights,order);
-		}
-		else{
-			printf("No flights with %d stops found",k);
-		}
-		return;
 	}
-	
 	/*No previous data matching in the cache so start a new search */
 	fclose(fp);
+	/*Set the array of visited for (DFS) to zero*/
 	memset(visited, 0 , g->numVertices * sizeof(int) );
-	paths[i]= sourceHead;
-	i++;
+	paths[i]= sourceHead; /*The begining of the route is the source city*/
+	i++; /*To iterate the route*/
 	fp = fopen("cache.txt", "a");
 	if (fp == NULL){
 		printf("\nFile couldn't be created\n");
@@ -185,7 +195,7 @@ void userInterface(Graph* g){
 	}
 	fprintf(fp,"*** %s %s\n",sourceHead->city,destination);
 	printf("\n ***************** DFS start *************** \n");
-	visited[sourceHead->id]=1;
+	visited[sourceHead->id]=1; /*set the departure city as visited*/
 	DFS(g,sourceHead,destination,&i,k, paths,visited,&found,fp, &j,flights);
 	if(found){
 		if(j){ /*j is number of flights found*/
@@ -419,7 +429,7 @@ int DFS(Graph* g, node* sourceHead, char destination[MAX_LENGTH], int* i, int k 
 			min = min + path[j]->min;
 		}
 		/*Computing hour:min*/
-		hour = hour + (min/60);
+		hour = hour + (min/60) + (*i-2) ;
 		min = min % 60;
 		fprintf(fp, "\n");
 		fprintf(fp,"%d %d %d %d\n",*i-2,hour,min,cost);
@@ -458,8 +468,15 @@ int DFS(Graph* g, node* sourceHead, char destination[MAX_LENGTH], int* i, int k 
 }
 
 void printresult(int size , flight flights[size], int order){
-	sort(flights, 0, size, order );
 	int i;
+	for(i=0;i<size;i++){
+		printf("\nFlight no: %d\n",i+1);
+		printf("%s\n",flights[i].route);
+		printf("number of stops: %d . Total duration: %d hour %d min \nTotal cost: %d\n ",flights[i].stops, flights[i].hour, flights[i].min, flights[i].cost);	
+	}
+	printf("\nAfter sorting:\n");	
+	sort(flights, 0, size, order );
+
 	for(i=0;i<size;i++){
 		printf("\nFlight no: %d\n",i+1);
 		printf("%s\n",flights[i].route);
