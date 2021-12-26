@@ -468,15 +468,8 @@ int DFS(Graph* g, node* sourceHead, char destination[MAX_LENGTH], int* i, int k 
 }
 
 void printresult(int size , flight flights[size], int order){
-	int i;
-	for(i=0;i<size;i++){
-		printf("\nFlight no: %d\n",i+1);
-		printf("%s\n",flights[i].route);
-		printf("number of stops: %d . Total duration: %d hour %d min \nTotal cost: %d\n ",flights[i].stops, flights[i].hour, flights[i].min, flights[i].cost);	
-	}
-	printf("\nAfter sorting:\n");	
-	sort(flights, 0, size, order );
-
+	int i;	
+	sort(flights, 0, size-1, order );
 	for(i=0;i<size;i++){
 		printf("\nFlight no: %d\n",i+1);
 		printf("%s\n",flights[i].route);
